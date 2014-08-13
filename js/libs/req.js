@@ -6,32 +6,47 @@ var Q = {
 		this.cfg = this._extend(this.cfg,obj);
 		return this;
 	},
-	require : function(paths,callback){
+	set : function(requeriments,callback){
 		this.definitions = [];
+		this.app = {};
+		var	elems = [],
+			routes = [];
+		for(var a in requeriments){
+			elems.push(a);
+			routes.push(requeriments[a]);
+		};
 		var self = this,
-			i = 0,
-			l = paths.length,
+			i = 0,			
+			l = routes.length,
 			loadScripts = function(){
 				if(i<l){
-					var u = self.cfg.paths[paths[i]] || paths[i];
+					var u = self.cfg.paths[routes[i]] || routes[i];
 					self._addScript(self._formatUrl(u),function(){
+						if(self.definitions.length<i){
+							self.define(function(){return {}});
+						};
 						loadScripts();
 					});
 					i++;
 				}else{
-					callback.apply(this, self.definitions);
+					var lb = self.definitions.length;
+					for(var ib = 0;ib<lb;ib++){
+						self.app[elems[ib]] = self.definitions[ib];
+					}
+					callback.apply(this, [self.app]);
 				}
 			};
 		loadScripts();
-		return this;
-	},	
-	define : function(obj){
+	},
+	define : function(fn){
+		var self = this,
+			obj = fn.apply(this, [self.app]);
 		this.definitions.push(obj);
 		return this;
 	},
 	_init : function(){
 		if(!this.initialized){
-			this.reset()._addScript(this._formatUrl(document.currentScript.getAttribute('data-main')));
+			this._reset()._addScript(this._formatUrl(document.currentScript.getAttribute('data-main')));
 		}
 		return this;
 	},

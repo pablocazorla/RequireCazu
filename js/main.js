@@ -6,14 +6,14 @@ Q
 		'a1': 'app1',
 		'a2': 'app2'
 	}
-})
-.require([
-	'jquery',
-	'a1',
-	'app2'
-],function(App1,App2){
+}).set({
+	'$': 'jquery',
+	'app1': 'a1',
+	'app2': 'a2'
+},function(App){
 	$('document').ready(function(){
-		App1.init();
-		App2.init();
+		App.$body = $('body');
+		App.app2.init();
 	});
+	
 });

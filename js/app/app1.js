@@ -5,7 +5,7 @@
 		$('body').css('background','red');
 	}
 
-	d({
+	Q.define({
 		init : init
 	});
 })();

@@ -1,10 +1,10 @@
 Q
 .config({
-	baseUrl : 'js/app/',
+	baseUrl : 'js/',
 	paths : {
-		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
-		'a1': 'app1',
-		'a2': 'app2'
+		'jquery': ['clibs/jquery-1.9.1.min.js','//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'],
+		'a1': 'app/app1',
+		'a2': 'app/app2'
 	}
 }).set({
 	'$': 'jquery',

@@ -53,24 +53,48 @@ var Q = {
 	_reset : function(){
 		this.cfg = {
 			baseUrl : '',
+			sufix : 'js',
 			paths : {}
 		}
 		this.definitions = [];
 		return this;
 	},
 	_formatUrl : function(url){
-		if(url.indexOf('.js') == -1){url += '.js';}
-		if(url.indexOf('//') == -1){url = this.cfg.baseUrl+url;}
-		return url;
+		if(typeof url == 'string'){
+			var url = [url];
+		}
+		var newUrl = [];
+		for(var i = 0;i<url.length;i++){
+			if(url[i].indexOf('.'+this.cfg.sufix) == -1){url[i] += '.'+this.cfg.sufix;}
+			if(url[i].indexOf('//') == -1){
+				url[i] = this.cfg.baseUrl+url[i];
+			}
+			newUrl.push(url[i]);
+		}	
+		return newUrl;
 	},
 	_addScript : function(url,callback){
 		var callback = callback || function(){},
-			s = document.createElement('script');
-		s.setAttribute('type','text/javascript');
-		s.setAttribute('async','true');
-		s.setAttribute('src',url);
-		document.body.appendChild(s);
-		s.addEventListener('load', callback,false);
+			i = 0, s,
+			loadScript = function(){
+				s = document.createElement('script');
+				s.type = 'text/javascript';
+				s.async = true;
+				s.src = url[i];
+				document.body.appendChild(s);
+				s.addEventListener('load', callback,false);
+				s.addEventListener('error', function(){
+					console.log('error');
+					document.body.removeChild(s);
+					i++;
+					if(i<url.length){
+						loadScript();	
+					}else{
+						callback();
+					}
+				},false);
+			};
+		loadScript();
 	},
 	_extend : function(destination, source) {
 		for (var property in source) {

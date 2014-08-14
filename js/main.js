@@ -2,7 +2,7 @@ Q
 .config({
 	baseUrl : 'js/',
 	paths : {
-		'jquery': ['clibs/jquery-1.9.1.min.js','//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'],
+		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
 		'a1': 'app/app1',
 		'a2': 'app/app2'
 	}

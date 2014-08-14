@@ -46,7 +46,14 @@ var Q = {
 	},
 	_init : function(){
 		if(!this.initialized){
-			this._reset()._addScript(this._formatUrl(document.currentScript.getAttribute('data-main')));
+			var s;
+			if(document.currentScript){
+				s = document.currentScript;
+			}else{
+				var ss = document.getElementsByTagName('script');
+				s = ss[ss.length - 1];
+			}
+			this._reset()._addScript(this._formatUrl(s.getAttribute('data-main')));
 		}
 		return this;
 	},
@@ -74,7 +81,8 @@ var Q = {
 		return newUrl;
 	},
 	_addScript : function(url,callback){
-		var callback = callback || function(){},
+		var self = this,
+			callback = callback || function(){},
 			i = 0, s,
 			loadScript = function(){
 				s = document.createElement('script');
@@ -82,8 +90,9 @@ var Q = {
 				s.async = true;
 				s.src = url[i];
 				document.body.appendChild(s);
-				s.addEventListener('load', callback,false);
-				s.addEventListener('error', function(){
+				self._listenEvent(s,'load', callback);
+				//s.addEventListener('load', callback,false);
+				/*s.addEventListener('error', function(){
 					console.log('error');
 					document.body.removeChild(s);
 					i++;
@@ -92,7 +101,7 @@ var Q = {
 					}else{
 						callback();
 					}
-				},false);
+				},false);*/
 			};
 		loadScript();
 	},
@@ -106,6 +115,16 @@ var Q = {
 			}
 		}
 		return destination;
+	},
+	_listenEvent : function(eventTarget, eventType, eventHandler) {
+		if (eventTarget.addEventListener) {
+			eventTarget.addEventListener(eventType, eventHandler,false);
+		} else if (eventTarget.attachEvent) {
+			eventType = "on" + eventType;
+			eventTarget.attachEvent(eventType, eventHandler);
+		} else {
+			eventTarget["on" + eventType] = eventHandler;
+		}
 	}
 };
 Q._init();

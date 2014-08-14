@@ -24,7 +24,7 @@ var Q = {
 					self._addScript(self._formatUrl(u),function(){
 						if(self.definitions.length<i){
 							self.define(function(){return {}});
-						};
+						};						
 						loadScripts();
 					});
 					i++;
@@ -83,27 +83,44 @@ var Q = {
 	_addScript : function(url,callback){
 		var self = this,
 			callback = callback || function(){},
-			i = 0, s,
-			loadScript = function(){
+			ii = 0,s,
+			asyncVariable = '',
+			ErrorHandler = function(){
+				
+				document.body.removeChild(s);
+				ii++;
+				if(ii<url.length){
+					getScript();	
+				}else{
+					callback();
+				}
+			},
+			getScript = function(){
 				s = document.createElement('script');
 				s.type = 'text/javascript';
-				s.async = true;
-				s.src = url[i];
+				s.async = 'async';
+				 //if this is IE8 and below
+	            if(typeof document.attachEvent === "object"){
+	            	asyncVariable = '?async='+Math.round(Math.random()*1000000000);
+	                s.onreadystatechange = function(){	                	
+	                    if (s.readyState === 'loaded'){
+	                    	var im = new Image();
+	                    	im.src = url[ii];
+	                    	im.onerror = ErrorHandler;
+	                        callback();
+	                    };
+	                };
+	            } else {
+	                //this is not IE8 and below, so we can actually use onload
+	                s.onload = function(){
+	                    callback();
+	                };
+	                s.onerror = ErrorHandler;
+	            };
+		        s.src = url[ii]+asyncVariable;
 				document.body.appendChild(s);
-				self._listenEvent(s,'load', callback);
-				//s.addEventListener('load', callback,false);
-				/*s.addEventListener('error', function(){
-					console.log('error');
-					document.body.removeChild(s);
-					i++;
-					if(i<url.length){
-						loadScript();	
-					}else{
-						callback();
-					}
-				},false);*/
 			};
-		loadScript();
+		getScript();
 	},
 	_extend : function(destination, source) {
 		for (var property in source) {
@@ -115,16 +132,6 @@ var Q = {
 			}
 		}
 		return destination;
-	},
-	_listenEvent : function(eventTarget, eventType, eventHandler) {
-		if (eventTarget.addEventListener) {
-			eventTarget.addEventListener(eventType, eventHandler,false);
-		} else if (eventTarget.attachEvent) {
-			eventType = "on" + eventType;
-			eventTarget.attachEvent(eventType, eventHandler);
-		} else {
-			eventTarget["on" + eventType] = eventHandler;
-		}
 	}
 };
 Q._init();

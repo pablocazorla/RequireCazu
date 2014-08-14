@@ -15,5 +15,4 @@ Q
 		App.$body = $('body');
 		App.app2.init();
 	});
-	
 });

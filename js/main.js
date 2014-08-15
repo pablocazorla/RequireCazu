@@ -1,4 +1,4 @@
-Q
+SR
 .config({
 	baseUrl : 'js/',
 	paths : {

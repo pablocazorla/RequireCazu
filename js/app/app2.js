@@ -1,4 +1,4 @@
-Q.define(function(App){
+SR.define(function(App){
 	return {
 		init : function(){
 			App.app1.init();

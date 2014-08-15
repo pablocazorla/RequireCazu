@@ -8,7 +8,8 @@
 		cfg = {
 			baseUrl : '',
 			sufix : 'js',
-			paths : {}
+			paths : {},
+			defaults : {}
 		},
 		initialized = false,
 
@@ -42,14 +43,14 @@
 					url[i] = cfg.baseUrl+url[i];
 				}
 				newUrl.push(url[i]);
-			}	
+			}
 			return newUrl;
 		},
 		addScript = function(url,callback){
 			var callback = callback || function(){},
 				ii = 0,s,
 				asyncVariable = '',
-				ErrorHandler = function(){				
+				ErrorHandler = function(){			
 					document.body.removeChild(s);
 					ii++;
 					if(ii<url.length){
@@ -98,7 +99,8 @@
 			definitions = [];
 			app = {};
 			var	elems = [],
-				routes = [];
+				routes = [],
+				requeriments = extend(cfg.defaults,requeriments);				
 			for(var a in requeriments){
 				elems.push(a);
 				routes.push(requeriments[a]);
@@ -119,6 +121,13 @@
 						var lb = definitions.length;
 						for(var ib = 0;ib<lb;ib++){
 							app[elems[ib]] = definitions[ib];
+						}
+						app.init = function(){
+							for(var a in app){
+								if(typeof app[a].init != 'undefined'){
+									app[a].init();
+								}
+							}
 						}
 						callback.apply(this, [app]);
 					}
